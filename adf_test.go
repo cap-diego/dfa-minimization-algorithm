@@ -1,13 +1,27 @@
-package adf
+// +build all minimization
 
-import (
-	testing "testing"
-	"fmt"
-)
+package DFA
 
+import testing "testing"
 
-func TestPrimero(t *testing.T) {
-	fmt.Println("Primer test")
+func TestTrivial(t *testing.T) {
+	q0 := State{IsFinal: false, Value: 0}
+	q1 := State{IsFinal: true, Value: 1}
+	states := []State{ q0, q1 }
+	alphabet := []int{0, 1}
+	delta := make(map[State]map[int]State)
+	delta[q0] = map[int]State{0: q0}
+	delta[q0] = map[int]State{1: q1}
+	delta[q1] = map[int]State{0: q0}
+	delta[q1] = map[int]State{1: q1}
+	M := DFA{States: states, InitialState: q0, FinalStates: []State{q1}, Delta: delta, Alphabet: alphabet}
+	Min := HopcroftDFAMin(M)
+	if Min.Size() != 2 {
+		t.Error("size of automata not right")
+	}
+}
+
+func aTestPrimero(t *testing.T) {
 	var states []State
 
 	q0 := State{IsFinal: false, Value: 0}
@@ -20,13 +34,11 @@ func TestPrimero(t *testing.T) {
 	fs := []State{q3, q4, q5}
 	alphabet := []int{0, 1}
 
-
 	delta := make(map[State]map[int]State)
 
-	//fmt.Println("Antes de asignar delta")
 	delta[q0] = map[int]State{0: q1}
 	delta[q0] = map[int]State{1: q0}
-	//
+
 	delta[q0] = map[int]State{0: q2}
 	delta[q0] = map[int]State{1: q0}
 
@@ -42,7 +54,7 @@ func TestPrimero(t *testing.T) {
 	delta[q5] = map[int]State{0: q3}
 	delta[q5] = map[int]State{1: q4}
 
-	fmt.Println("Antes de llamar a min")
-	M := Adf{States: states, InitialState: q0, FinalStates: fs, Delta: delta, Alphabet: alphabet}
-	MinADF(&M)
+	M := DFA{States: states, InitialState: q0, FinalStates: fs, Delta: delta, Alphabet: alphabet}
+
+	HopcroftDFAMin(M)	
 }
