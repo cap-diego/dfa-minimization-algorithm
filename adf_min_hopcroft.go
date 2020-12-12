@@ -1,5 +1,6 @@
 package DFA
 
+import "fmt"
 
 func HopcroftDFAMin(A DFA) DFA{
 	/* Minimise finite automaton */
@@ -26,8 +27,15 @@ func HopcroftDFAMin(A DFA) DFA{
 
 	for len(worklist) > 0 {
 		// Pick a splitter <Partition P, Symbol a> from the splitter set (and delete it)
+		prev := len(worklist)
+
 		currentSplitter := PickOneAndRemove(&worklist)
-		
+		fmt.Printf("Len: %d vs %d\n", prev, len(worklist))
+
+		if len(worklist) >= prev {
+			panic("no se redujo la longitud")
+		}
+
 		for _, R := range pi { //Step 7
 			R1, R2, splitted := R.SplitBy(&currentSplitter, &A)
 			if splitted { // Hay refinamiento
@@ -36,7 +44,6 @@ func HopcroftDFAMin(A DFA) DFA{
 				// R2 == B''j ==>  Bk
 				R = R1
 				pi = append(pi, R2)
-
 				for _, c := range A.Alphabet {
 					for _, splitter := range worklist {
 						currentPartition := splitter.Partition
@@ -52,17 +59,31 @@ func HopcroftDFAMin(A DFA) DFA{
 			}
 		}
 	}
-	// Ar := DFA{States: statesFromMinim, Alphabet: A.Alphabet, InitialState: A.initialState, FinalStates: finalStatesFromMinim, Delta: A.Delta}
-	return DFA{}
+	var finalStatesMinim Partition
+	var statesMinim Partition
+	var initialStateMinim State 
+
+	fmt.Printf("%#v\n Partitions: %d\n", pi, len(pi))
+	for _, part := range pi {
+			for _, s := range part {
+				statesMinim.Add(s)
+				if A.FinalStates.Includes(s) {
+					finalStatesMinim.Add(s)
+				}else if(A.InitialState == s) {
+					initialStateMinim = s
+				}
+				
+			}
+	}
+	Ar := DFA{States: statesMinim, Alphabet: A.Alphabet, InitialState: initialStateMinim, FinalStates: finalStatesMinim, Delta: A.Delta}
+	return Ar
 }
 
 func PickOneAndRemove(worklist *[]Splitter) Splitter {
 	worklistSize := len(*worklist)
+	newWorklist := *worklist
 	sp := (*worklist)[worklistSize - 1]
-	newWorklist := (*worklist)[:worklistSize-1]
-	worklist = &newWorklist
-	if len(*worklist) == worklistSize {
-		panic("asd")
-	}
+	newWorklist = (*worklist)[:worklistSize-1]
+	*worklist = newWorklist
 	return sp
 }

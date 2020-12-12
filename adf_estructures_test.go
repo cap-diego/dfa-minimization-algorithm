@@ -6,7 +6,7 @@ import testing "testing"
 
 
 func TestPartitionNotEmpty(t *testing.T) {
-	q0 := State{IsFinal: false, Value: 0}
+	q0 := 0
 
 	partition := Partition{ q0 }
 
@@ -20,7 +20,7 @@ func TestPartitionEmpty(t *testing.T) {
 	if !partition.IsEmpty() {
 		t.Error()
 	}
-	q0 := State{IsFinal: false, Value: 0}
+	q0 := 0
 
 	partition.Add(q0)
 
@@ -30,7 +30,7 @@ func TestPartitionEmpty(t *testing.T) {
 }
 
 func TestPartitionExtractElem(t *testing.T) {
-	q0 := State{IsFinal: false, Value: 0}
+	q0 := 0
 	partition := Partition{ q0 }
 
 	partition.ExtractElem(q0)
@@ -38,7 +38,7 @@ func TestPartitionExtractElem(t *testing.T) {
 	if !partition.IsEmpty() {
 		t.Error()
 	}
-	q1 := State{IsFinal: true, Value: 1}
+	q1 := 1
 	partition.Add(q0)
 	partition.Add(q1)
 	partition.ExtractElem(q1)
@@ -51,10 +51,10 @@ func TestPartitionExtractElem(t *testing.T) {
 }
 
 func TestPartitionExtractPartitionWithNoIntersection(t *testing.T) {
-	q1 := State{IsFinal: true, Value: 1}
-	q2 := State{IsFinal: false, Value: 2}
-	q3 := State{IsFinal: false, Value: 3}
-	q4 := State{IsFinal: false, Value: 4}
+	q1 := 1
+	q2 := 2
+	q3 := 3
+	q4 := 4
 
 	p1 := Partition{ q1, q2 }
 	p2 := Partition{ q3, q4 }
@@ -66,10 +66,10 @@ func TestPartitionExtractPartitionWithNoIntersection(t *testing.T) {
 	}
 }
 func TestPartitionExtractPartitionWithIntersection(t *testing.T) {
-	q1 := State{IsFinal: true, Value: 1}
-	q2 := State{IsFinal: false, Value: 2}
-	q3 := State{IsFinal: false, Value: 3}
-	q4 := State{IsFinal: false, Value: 4}
+	q1 := 1
+	q2 := 2
+	q3 := 3
+	q4 := 4
 
 	p1 := Partition{ q1, q2, q4 }
 	p2 := Partition{ q3, q4 }
@@ -81,10 +81,10 @@ func TestPartitionExtractPartitionWithIntersection(t *testing.T) {
 }
 
 func TestPartitionExtractPartitionBiggerBecomesEmpty(t *testing.T) {
-	q1 := State{IsFinal: true, Value: 1}
-	q2 := State{IsFinal: false, Value: 2}
-	q3 := State{IsFinal: false, Value: 3}
-	q4 := State{IsFinal: false, Value: 4}
+	q1 := 1
+	q2 := 2
+	q3 := 3
+	q4 := 4
 
 	p1 := Partition{ q1, q2, q3, q4 }
 	p2 := Partition{ q3, q4 }

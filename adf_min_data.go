@@ -1,11 +1,7 @@
 package DFA
 
 type Partition []State
-
-type State struct {
-	Value int
-	IsFinal bool
-}
+type State = int // Alias to int
 
 type Splitter struct {
 	Partition Partition
