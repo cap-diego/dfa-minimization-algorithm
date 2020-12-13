@@ -1,7 +1,5 @@
 package DFA
 
-import "fmt"
-
 func HopcroftDFAMin(A DFA) DFA{
 	/* Minimise finite automaton */
 
@@ -24,59 +22,75 @@ func HopcroftDFAMin(A DFA) DFA{
 			worklist = append(worklist, Splitter{Partition: pi[1], Symbol: symb})
 		}
 	}
-
 	for len(worklist) > 0 {
 		// Pick a splitter <Partition P, Symbol a> from the splitter set (and delete it)
-		prev := len(worklist)
-
 		currentSplitter := PickOneAndRemove(&worklist)
-		fmt.Printf("Len: %d vs %d\n", prev, len(worklist))
-
-		if len(worklist) >= prev {
-			panic("no se redujo la longitud")
-		}
-
-		for _, R := range pi { //Step 7
+		for i, R := range pi { //Step 7
 			R1, R2, splitted := R.SplitBy(&currentSplitter, &A)
 			if splitted { // Hay refinamiento
 				// R == Bj
 				// R1 == B'j  ==>  Bj
 				// R2 == B''j ==>  Bk
-				R = R1
 				pi = append(pi, R2)
 				for _, c := range A.Alphabet {
-					for _, splitter := range worklist {
-						currentPartition := splitter.Partition
-						ar1 := R1.StatesWithIncomingTransitionWith(c, &A)
-						ar2 := R2.StatesWithIncomingTransitionWith(c, &A)
-						if (splitter.Symbol == c && R.Equals(currentPartition)) || (ar1.Size() > ar2.Size()) { 
-							worklist = append(worklist, Splitter{Partition: R1, Symbol: c})
-						}else {
-							worklist = append(worklist, Splitter{Partition: R2, Symbol: c})
-						}
+					spR := Splitter{ Partition: R, Symbol: c}
+					spR1 := Splitter{ Partition: R1, Symbol: c}
+					spR2 := Splitter{ Partition: R2, Symbol: c}
+					if !ReplaceInWorklistIfSplitterExists(&worklist, spR, spR1, spR2) { 
+							ar1 := R1.StatesWithIncomingTransitionWith(c, &A)
+							ar2 := R2.StatesWithIncomingTransitionWith(c, &A)
+							if ( (ar1.Size() < ar2.Size())) { 
+								worklist = append(worklist, Splitter{Partition: R1, Symbol: c})
+							}else {
+								worklist = append(worklist, Splitter{Partition: R2, Symbol: c})
+							}
 					}
 				}
+				pi = append(pi, R1)
+				pi[i] = pi[len(pi)-1]
+				pi = pi[:len(pi)-1]
 			}
 		}
 	}
 	var finalStatesMinim Partition
 	var statesMinim Partition
 	var initialStateMinim State 
-
-	fmt.Printf("%#v\n Partitions: %d\n", pi, len(pi))
-	for _, part := range pi {
+	for i, part := range pi {
+			statesMinim.Add(i)
+			tieneEstadosFinales := false
+			tieneEstadoInicial := false
 			for _, s := range part {
-				statesMinim.Add(s)
 				if A.FinalStates.Includes(s) {
-					finalStatesMinim.Add(s)
+					tieneEstadosFinales = true
+					continue;
 				}else if(A.InitialState == s) {
-					initialStateMinim = s
+					tieneEstadoInicial = true
 				}
-				
+				if tieneEstadosFinales {
+					finalStatesMinim.Add(s)	
+				}
+				if tieneEstadoInicial {
+					initialStateMinim = s
+				}	
 			}
 	}
 	Ar := DFA{States: statesMinim, Alphabet: A.Alphabet, InitialState: initialStateMinim, FinalStates: finalStatesMinim, Delta: A.Delta}
 	return Ar
+}
+
+func ReplaceInWorklistIfSplitterExists(worklist *[]Splitter, spR Splitter, spR1 Splitter, spR2 Splitter) bool {
+	newWorklist := *worklist
+	worklistSize := len(*worklist)
+	for i, w := range (*worklist) {
+		if w.Partition.Equals(spR.Partition) && w.Symbol == spR.Symbol {
+			newWorklist[i] = (*worklist)[worklistSize-1]
+			newWorklist = append(newWorklist, spR1)
+			newWorklist = append(newWorklist, spR2)
+			*worklist = newWorklist
+			return true
+		}
+	}
+	return false
 }
 
 func PickOneAndRemove(worklist *[]Splitter) Splitter {

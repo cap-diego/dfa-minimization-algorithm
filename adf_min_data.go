@@ -39,15 +39,20 @@ func (P *Partition) SplitBy(sp *Splitter, A *DFA) (R1 Partition, R2 Partition, s
 	return
 }
 
+func NewPartition() *Partition {
+	p := make(Partition, 0)
+	return &p//&Partition{}
+}
+
 // StatesWithIncomingTransitionWith returns the states from P that incoming transitions with a
 func (P *Partition) StatesWithIncomingTransitionWith(a int, A *DFA) Partition {
-	var newPartition Partition
+	newPartition := NewPartition()
 	for _, s := range A.States {
 		if P.Includes(A.Delta[s][a]) {
 			newPartition.Add(A.Delta[s][a])
 		}
 	}
-	return newPartition
+	return *newPartition
 }	
 
 type Set interface {
@@ -60,14 +65,19 @@ type Set interface {
 	Equals(Q Partition) bool
 }
 
+
+// Equals returns true if Q has the same elements that the partition
 func (P *Partition) Equals(Q Partition) bool {
+	if Q.Size() != P.Size() {
+		return false
+	}
 	for _, p := range (*P) {
 		Q.ExtractElem(p)
 	}	
 	return Q.IsEmpty()
 }
 
-// Add adds a new state to the partition if it does not exists
+// Add adds a new state to the partition if it does not exist
 func (P *Partition) Add(q State) {
 	for _, t := range (*P) {
 		if  t == q {
@@ -77,15 +87,20 @@ func (P *Partition) Add(q State) {
 	*P = append(*P, q)
 }
 
+// IsEmpty returns true if the partition has 0 elements
 func (P *Partition) IsEmpty() bool {
 	return P.Size() == 0
 }
 
+// Size returns the elements of the partition
 func (P *Partition) Size() int {
+	if *P == nil {
+		return 0
+	}
 	return len((*P))
 }
 
-// Includes returns true if q is in P
+// Includes returns true if q is in the partition
 func (P *Partition) Includes(q State) bool {
 	for _, p := range (*P) {
 		if q == p {
@@ -95,13 +110,14 @@ func (P *Partition) Includes(q State) bool {
 	return false
 }
 
+// Extract removes the elements of Q from the partition
 func (P *Partition) Extract(Q Partition) {
 	for _, e := range Q {
 		P.ExtractElem(e)
 	}
 }
 
-// ExtractElem removes q from P if it exists
+// ExtractElem removes q from the partition
 func (P *Partition) ExtractElem(q State) {
 	for i, e := range *P {
 		if e == q {

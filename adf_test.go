@@ -1,5 +1,3 @@
-// +build all minimization
-
 package DFA
 
 import testing "testing"
@@ -83,30 +81,24 @@ func TestDFANoMinimo(t *testing.T) {
 
 	delta := make(map[State]map[int]State)
 
-	delta[q1] = map[int]State{0: q2}
-	delta[q1] = map[int]State{1: q1}
+	delta[q1] = map[int]State{0: q2, 1: q1}
 
-	delta[q2] = map[int]State{0: q3}
-	delta[q2] = map[int]State{1: q1}
+	delta[q2] = map[int]State{0: q3, 1: q1}
 
-	delta[q3] = map[int]State{0: q4}
-	delta[q3] = map[int]State{1: q1}
+	delta[q3] = map[int]State{0: q4, 1: q1}
 
-	delta[q4] = map[int]State{0: q4}
-	delta[q4] = map[int]State{1: q5}
+	delta[q4] = map[int]State{0: q4, 1: q5}
 
-	delta[q5] = map[int]State{0: q6}
-	delta[q5] = map[int]State{1: q5}
+	delta[q5] = map[int]State{0: q6, 1: q5}
 
-	delta[q6] = map[int]State{0: q4}
-	delta[q6] = map[int]State{1: q5}
+	delta[q6] = map[int]State{0: q4, 1: q5}
 
 	M := DFA{States: states, InitialState: q1, FinalStates: fs, Delta: delta, Alphabet: alphabet}
 
 	Min := HopcroftDFAMin(M)
 
-	if (Min.States.Size() != M.States.Size()) {
-		t.Error("the minimized dfa should have the same number of states")
+	if (Min.States.Size() == M.States.Size()) {
+		t.Errorf("the minimized dfa should have less states, expected 4, have %d", Min.States.Size())
 	} 
 }
 
