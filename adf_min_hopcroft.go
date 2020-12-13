@@ -1,10 +1,7 @@
 package DFA
 
-func HopcroftDFAMin(A DFA) DFA{
-	/* Minimise finite automaton */
-
+func HopcroftDFAMin(A DFA) DFA {
 	var pi []Partition
-
 	pi = append(pi, A.FinalStates)
 	pi = append(pi, A.States)
 	pi[1].Extract(pi[0])
@@ -52,30 +49,49 @@ func HopcroftDFAMin(A DFA) DFA{
 			}
 		}
 	}
-	var finalStatesMinim Partition
-	var statesMinim Partition
-	var initialStateMinim State 
+	finalStatesMinim := NewPartition()
+	statesMinim := NewPartition()
+	var initialStateMinim State
+	DeltaMin := make(map[State]map[int]State)
 	for i, part := range pi {
 			statesMinim.Add(i)
-			tieneEstadosFinales := false
-			tieneEstadoInicial := false
+			AddTransitions(&DeltaMin, &A, pi, i)
+			partitionHasFinalStates := false
+			partitionHasInitialState := false
 			for _, s := range part {
 				if A.FinalStates.Includes(s) {
-					tieneEstadosFinales = true
-					continue;
-				}else if(A.InitialState == s) {
-					tieneEstadoInicial = true
+					partitionHasFinalStates = true
 				}
-				if tieneEstadosFinales {
-					finalStatesMinim.Add(s)	
+				if(A.InitialState == s) {
+					partitionHasInitialState = true
+					continue
 				}
-				if tieneEstadoInicial {
-					initialStateMinim = s
-				}	
 			}
+			if partitionHasFinalStates {
+				finalStatesMinim.Add(i)	
+			}
+			if partitionHasInitialState {
+				initialStateMinim = i
+			}	
 	}
-	Ar := DFA{States: statesMinim, Alphabet: A.Alphabet, InitialState: initialStateMinim, FinalStates: finalStatesMinim, Delta: A.Delta}
+	Ar := DFA{States: *statesMinim, Alphabet: A.Alphabet, InitialState: initialStateMinim, FinalStates: *finalStatesMinim, Delta: DeltaMin}
 	return Ar
+}
+
+func AddTransitions(DeltaMin *map[State]map[int]State, A *DFA, pi []Partition, i int) {
+	for _, c := range A.Alphabet {
+		particionDelEstado := particionDeEstado(&pi, A.Delta[pi[i][0]][c])
+		(*DeltaMin)[i] = map[int]State{c: particionDelEstado} 
+	}
+}
+
+func particionDeEstado(pi *[]Partition, q State) int {
+	for i, part := range *pi {
+		if part.Includes(q) {
+			return i
+		}
+	}
+	return 0
 }
 
 func ReplaceInWorklistIfSplitterExists(worklist *[]Splitter, spR Splitter, spR1 Splitter, spR2 Splitter) bool {

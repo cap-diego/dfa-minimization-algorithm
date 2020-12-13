@@ -16,12 +16,13 @@ type DFA struct {
 	Delta map[State]map[int]State // Given state and symbol returns the state
 }
 
+// Size returns the number of states of the automata
 func (M *DFA) Size() int{
 	return M.States.Size()
 }
 
-// SplitBy returns R1 and R2, where R1 are the states from P that has transitions to sp.Partition with sp.Symbol
-// and R2 are the states from P that do not have transitions with sp.Symbol to sp.Partition
+// SplitBy returns R1 and R2, where R1 are the states from the partition that has transitions to sp.Partition with sp.Symbol
+// and R2 are the states from the partition that do not have transitions with sp.Symbol to sp.Partition
 func (P *Partition) SplitBy(sp *Splitter, A *DFA) (R1 Partition, R2 Partition, splitted bool) {
 	splitted = true
 	a := sp.Symbol
@@ -39,12 +40,12 @@ func (P *Partition) SplitBy(sp *Splitter, A *DFA) (R1 Partition, R2 Partition, s
 	return
 }
 
+// NewPartition returns a new initialized partition
 func NewPartition() *Partition {
-	p := make(Partition, 0)
-	return &p//&Partition{}
+	return &Partition{}
 }
 
-// StatesWithIncomingTransitionWith returns the states from P that incoming transitions with a
+// StatesWithIncomingTransitionWith returns the states from the partition that has incoming transitions with a
 func (P *Partition) StatesWithIncomingTransitionWith(a int, A *DFA) Partition {
 	newPartition := NewPartition()
 	for _, s := range A.States {
@@ -92,11 +93,8 @@ func (P *Partition) IsEmpty() bool {
 	return P.Size() == 0
 }
 
-// Size returns the elements of the partition
+// Size returns the number of elements of the partition
 func (P *Partition) Size() int {
-	if *P == nil {
-		return 0
-	}
 	return len((*P))
 }
 
