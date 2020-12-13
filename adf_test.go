@@ -8,10 +8,8 @@ func TestTrivial(t *testing.T) {
 	states := []State{ q0, q1 }
 	alphabet := []int{0, 1}
 	delta := make(map[State]map[int]State)
-	delta[q0] = map[int]State{0: q0}
-	delta[q0] = map[int]State{1: q1}
-	delta[q1] = map[int]State{0: q0}
-	delta[q1] = map[int]State{1: q1}
+	delta[q0] = map[int]State{0: q0, 1: q1}
+	delta[q1] = map[int]State{0: q0, 1: q1}
 	M := DFA{States: states, InitialState: q0, FinalStates: []State{q1}, Delta: delta, Alphabet: alphabet}
 	Min := HopcroftDFAMin(M)
 	if Min.Size() != 2 {
@@ -37,30 +35,24 @@ func TestDFAMinimo(t *testing.T) {
 
 	delta := make(map[State]map[int]State)
 
-	delta[q1] = map[int]State{0: q2}
-	delta[q1] = map[int]State{1: q1}
+	delta[q1] = map[int]State{0: q2, 1: q1}
 
-	delta[q2] = map[int]State{0: q3}
-	delta[q2] = map[int]State{1: q2}
+	delta[q2] = map[int]State{0: q3, 1: q2}
 
-	delta[q3] = map[int]State{0: q4}
-	delta[q3] = map[int]State{1: q3}
+	delta[q3] = map[int]State{0: q4, 1: q3}
 
-	delta[q4] = map[int]State{0: q5}
-	delta[q4] = map[int]State{1: q4}
+	delta[q4] = map[int]State{0: q5, 1: q4}
 
-	delta[q5] = map[int]State{0: q6}
-	delta[q5] = map[int]State{1: q5}
+	delta[q5] = map[int]State{0: q6, 1: q5}
 
-	delta[q6] = map[int]State{0: q6}
-	delta[q6] = map[int]State{1: q6}
+	delta[q6] = map[int]State{0: q6, 1: q6}
 
 	M := DFA{States: states, InitialState: q1, FinalStates: fs, Delta: delta, Alphabet: alphabet}
 
 	Min := HopcroftDFAMin(M)
 
 	if (Min.States.Size() != M.States.Size()) {
-		t.Error("the minimized dfa should have the same number of states")
+		t.Errorf("the minimized dfa should have the same number of states, expected 6 have %d", Min.States.Size())
 	} 
 }
 
