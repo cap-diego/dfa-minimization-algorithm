@@ -1,6 +1,8 @@
 package DFA
 
-import testing "testing"
+import (
+	testing "testing"
+)
 
 func TestTrivial(t *testing.T) {
 	q0 := 0
@@ -52,7 +54,7 @@ func TestDFAMinimo(t *testing.T) {
 	Min := HopcroftDFAMin(M)
 
 	if (Min.States.Size() != M.States.Size()) {
-		t.Errorf("the minimized dfa should have the same number of states, expected 6 have %d", Min.States.Size())
+		t.Errorf("the minimized dfa should have the same number of states, expected 6 got %d", Min.States.Size())
 	} 
 }
 
@@ -90,12 +92,13 @@ func TestDFANoMinimo(t *testing.T) {
 	Min := HopcroftDFAMin(M)
 
 	if (Min.States.Size() == M.States.Size()) {
-		t.Errorf("the minimized dfa should have less states, expected 4, have %d", Min.States.Size())
+		t.Errorf("the minimized dfa should have less states, expected 4, got %d", Min.States.Size())
 	} 
 }
 
 
 func Test2DFANoMinimo(t *testing.T) {
+	// 02 | 012
 	var states []State
 	q0 := 0
 	q1 := 1
@@ -115,20 +118,21 @@ func Test2DFANoMinimo(t *testing.T) {
 	Min := HopcroftDFAMin(M)
 
 	if Min.States.Size() != 4 {
-		t.Errorf("error, expected 4 have %d states", Min.States.Size())
+		t.Errorf("error, expected 4 got %d states", Min.States.Size())
 	}
 	if Min.FinalStates.Size() != 1 {
-		t.Errorf("error, expected 1 final state have: %d", Min.FinalStates.Size())
+		t.Errorf("error, expected 1 final state got: %d", Min.FinalStates.Size())
 	}
-	// if Min.Delta[Min.FinalStates[0]] == nil {
-	// 	t.Errorf("Final: %d \n %#v\n", Min.FinalStates[0], Min.Delta[Min.FinalStates[0]])
-	// }
-	// if Min.Delta[Min.InitialState] != nil {
-	// 	t.Errorf("Initial: %d\n %#v\n", Min.InitialState, Min.Delta[Min.InitialState])
-	// }
+	if states := Min.FinalStates.StatesWithIncomingTransitionWith(q0, &Min); states.IsEmpty() {
+		t.Errorf("error, expected 0 transitions to final states, got: %d\n", states.Size())
+	}
+	if Min.Delta[Min.InitialState] == nil {
+		t.Errorf("error, expected transition from initial got: %d\n", Min.InitialState)
+	}
 }
 
 func Test3DFANoMinimo(t *testing.T) {
+	// a ( b | c*)
 	var states []State
 	q0 := 0
 	q1 := 1
@@ -138,23 +142,57 @@ func Test3DFANoMinimo(t *testing.T) {
 	fs := []State{ q1, q2, q3 }
 	alphabet := []int{0, 1, 2}
 	delta := make(map[State]map[int]State)
-	delta[q0] = map[int]State{1: q1}
+	delta[q0] = map[int]State{0: q1}
 	delta[q1] = map[int]State{1: q2, 2: q3}
 	delta[q2] = map[int]State{1: q2, 2: q3}
 	delta[q3] = map[int]State{1: q2, 2: q3}
+
 	M := DFA{States: states, InitialState: q1, FinalStates: fs, Delta: delta, Alphabet: alphabet}
 	Min := HopcroftDFAMin(M)
 
 	if Min.States.Size() != 2 {
-		t.Errorf("error, expected 2 have %d states", Min.States.Size())
+		t.Errorf("error, expected 2 got %d states", Min.States.Size())
 	}
 	if Min.FinalStates.Size() != 1 {
-		t.Errorf("error, expected 1 final state have: %d", Min.FinalStates.Size())
+		t.Errorf("error, expected 1 final state got: %d", Min.FinalStates.Size())
 	}
 	for _, c := range Min.Alphabet {
 		statesWithIncomingTransitions := Min.FinalStates.StatesWithIncomingTransitionWith(c, &Min)
 		if statesWithIncomingTransitions.Size() == 0 {
-			t.Errorf("error, expected transition with %d to final state %d", c, Min.FinalStates[0])
+			t.Errorf("error, expected transition with %d to final state %d\n", c, Min.FinalStates[0])
 		}
 	}	
+}
+
+
+func Test4DFANoMinimo(t *testing.T) {
+	var states []State
+	A := 0
+	B := 1
+	C := 2 
+	D := 3
+	E := 4
+	F := 5 
+	G := 6
+	H := 7
+	states = append(states, A, B, C, D, E, F, G, H)
+	fs := []State{ C }
+	alphabet := []int{ 0, 1 }
+	delta := make(map[State]map[int]State)
+	delta[A] = map[int]State{0: B, 1: F}
+	delta[B] = map[int]State{0: G, 1: C}
+	delta[C] = map[int]State{0: A, 1: C}
+	delta[D] = map[int]State{0: C, 1: G}
+	delta[E] = map[int]State{0: H, 1: F}
+	delta[F] = map[int]State{0: C, 1: G}
+	delta[G] = map[int]State{0: G, 1: E}
+	delta[H] = map[int]State{0: G, 1: C}
+	M := DFA{States: states, InitialState: A, FinalStates: fs, Delta: delta, Alphabet: alphabet}
+	Min := HopcroftDFAMin(M)
+	if Min.States.Size() != 5 {
+		t.Errorf("error, expected 5 states got %d", Min.States.Size())
+	}
+	if Min.FinalStates.Size() != 1 {
+		t.Errorf("error, expected 1 final state got %d", Min.FinalStates.Size())
+	}
 }

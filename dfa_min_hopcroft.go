@@ -80,12 +80,21 @@ func HopcroftDFAMin(A DFA) DFA {
 
 func AddTransitions(DeltaMin *map[State]map[int]State, A *DFA, pi []Partition, i int) {
 	for _, c := range A.Alphabet {
-		particionDelEstado := particionDeEstado(&pi, A.Delta[pi[i][0]][c])
-		(*DeltaMin)[i] = map[int]State{c: particionDelEstado} 
+		transitionState, ok := A.Delta[pi[i][0]][c]
+		if !ok {
+			continue
+		}
+		partitionOfState := getPartitionOfState(&pi, transitionState)
+		if (*DeltaMin)[i] == nil {
+			(*DeltaMin)[i] = map[int]State{c: partitionOfState} 
+		}else {
+			(*DeltaMin)[i][c] = partitionOfState
+		}
 	}
+
 }
 
-func particionDeEstado(pi *[]Partition, q State) int {
+func getPartitionOfState(pi *[]Partition, q State) int {
 	for i, part := range *pi {
 		if part.Includes(q) {
 			return i
