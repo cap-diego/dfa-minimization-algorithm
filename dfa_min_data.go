@@ -1,33 +1,37 @@
-package DFA
+package dfa
 
+// Partition represents a set of states
 type Partition []State
+
+// State represent automata state with a numeric value
 type State = int // Alias to int
 
-type Splitter struct {
-	Partition Partition
-	Symbol int
+type splitter struct {
+	partition Partition
+	input     int
 }
 
+// DFA represents a finite automata
 type DFA struct {
-	States Partition
-	Alphabet []int
+	States       Partition
+	Alphabet     []int
 	InitialState State
-	FinalStates Partition
-	Delta map[State]map[int]State // Given state and symbol returns the state
+	FinalStates  Partition
+	Delta        map[State]map[int]State // Given state and symbol returns the state
 }
 
 // Size returns the number of states of the automata
-func (M *DFA) Size() int{
+func (M *DFA) Size() int {
 	return M.States.Size()
 }
 
 // SplitBy returns R1 and R2, where R1 are the states from the partition that has transitions to sp.Partition with sp.Symbol
 // and R2 are the states from the partition that do not have transitions with sp.Symbol to sp.Partition
-func (P *Partition) SplitBy(sp *Splitter, A *DFA) (R1 Partition, R2 Partition, splitted bool) {
+func (P *Partition) SplitBy(sp *splitter, A *DFA) (R1 Partition, R2 Partition, splitted bool) {
 	splitted = true
-	a := sp.Symbol
-	partitionSp := sp.Partition
-	for _, t := range (*P) {
+	a := sp.input
+	partitionSp := sp.partition
+	for _, t := range *P {
 		if partitionSp.Includes((A.Delta[t][a])) {
 			R1.Add(t)
 		} else {
@@ -54,8 +58,9 @@ func (P *Partition) StatesWithIncomingTransitionWith(a int, A *DFA) Partition {
 		}
 	}
 	return *newPartition
-}	
+}
 
+// Set interface wraps the basic actions that a math set should have
 type Set interface {
 	Extract(Q Partition)
 	ExtractElem(q *State)
@@ -66,22 +71,21 @@ type Set interface {
 	Equals(Q Partition) bool
 }
 
-
 // Equals returns true if Q has the same elements that the partition
 func (P *Partition) Equals(Q Partition) bool {
 	if Q.Size() != P.Size() {
 		return false
 	}
-	for _, p := range (*P) {
+	for _, p := range *P {
 		Q.ExtractElem(p)
-	}	
+	}
 	return Q.IsEmpty()
 }
 
 // Add adds a new state to the partition if it does not exist
 func (P *Partition) Add(q State) {
-	for _, t := range (*P) {
-		if  t == q {
+	for _, t := range *P {
+		if t == q {
 			return
 		}
 	}
@@ -100,7 +104,7 @@ func (P *Partition) Size() int {
 
 // Includes returns true if q is in the partition
 func (P *Partition) Includes(q State) bool {
-	for _, p := range (*P) {
+	for _, p := range *P {
 		if q == p {
 			return true
 		}
@@ -125,6 +129,3 @@ func (P *Partition) ExtractElem(q State) {
 		}
 	}
 }
-
-
-

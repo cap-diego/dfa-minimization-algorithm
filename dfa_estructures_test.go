@@ -4,11 +4,10 @@ package DFA
 
 import testing "testing"
 
-
 func TestPartitionNotEmpty(t *testing.T) {
 	q0 := 0
 
-	partition := Partition{ q0 }
+	partition := Partition{q0}
 
 	if partition.IsEmpty() {
 		t.Error()
@@ -31,7 +30,7 @@ func TestPartitionEmpty(t *testing.T) {
 
 func TestPartitionExtractElem(t *testing.T) {
 	q0 := 0
-	partition := Partition{ q0 }
+	partition := Partition{q0}
 
 	partition.ExtractElem(q0)
 
@@ -56,12 +55,12 @@ func TestPartitionExtractPartitionWithNoIntersection(t *testing.T) {
 	q3 := 3
 	q4 := 4
 
-	p1 := Partition{ q1, q2 }
-	p2 := Partition{ q3, q4 }
+	p1 := Partition{q1, q2}
+	p2 := Partition{q3, q4}
 	oldSizeSum := p1.Size() + p2.Size()
 
 	p1.Extract(p2)
-	if oldSizeSum != p1.Size() + p2.Size() {
+	if oldSizeSum != p1.Size()+p2.Size() {
 		t.Error()
 	}
 }
@@ -71,11 +70,11 @@ func TestPartitionExtractPartitionWithIntersection(t *testing.T) {
 	q3 := 3
 	q4 := 4
 
-	p1 := Partition{ q1, q2, q4 }
-	p2 := Partition{ q3, q4 }
+	p1 := Partition{q1, q2, q4}
+	p2 := Partition{q3, q4}
 	oldSizeP1 := p1.Size()
 	p1.Extract(p2)
-	if oldSizeP1 != p1.Size() + 1 {
+	if oldSizeP1 != p1.Size()+1 {
 		t.Error()
 	}
 }
@@ -86,11 +85,10 @@ func TestPartitionExtractPartitionBiggerBecomesEmpty(t *testing.T) {
 	q3 := 3
 	q4 := 4
 
-	p1 := Partition{ q1, q2, q3, q4 }
-	p2 := Partition{ q3, q4 }
+	p1 := Partition{q1, q2, q3, q4}
+	p2 := Partition{q3, q4}
 	p2.Extract(p1)
 	if !p2.IsEmpty() {
 		t.Error()
 	}
 }
-

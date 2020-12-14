@@ -1,4 +1,4 @@
-package DFA
+package dfa
 
 import (
 	testing "testing"
@@ -7,7 +7,7 @@ import (
 func TestTrivial(t *testing.T) {
 	q0 := 0
 	q1 := 1
-	states := []State{ q0, q1 }
+	states := []State{q0, q1}
 	alphabet := []int{0, 1}
 	delta := make(map[State]map[int]State)
 	delta[q0] = map[int]State{0: q0, 1: q1}
@@ -28,10 +28,10 @@ func TestDFAMinimo(t *testing.T) {
 	q4 := 4
 	q5 := 5
 	q6 := 6
-	
-	states = append(states ,q1, q2, q3, q4, q5, q6)
-	
-	fs := []State{ q6 }
+
+	states = append(states, q1, q2, q3, q4, q5, q6)
+
+	fs := []State{q6}
 
 	alphabet := []int{0, 1}
 
@@ -53,9 +53,9 @@ func TestDFAMinimo(t *testing.T) {
 
 	Min := HopcroftDFAMin(M)
 
-	if (Min.States.Size() != M.States.Size()) {
+	if Min.States.Size() != M.States.Size() {
 		t.Errorf("the minimized dfa should have the same number of states, expected 6 got %d", Min.States.Size())
-	} 
+	}
 }
 
 func TestDFANoMinimo(t *testing.T) {
@@ -66,10 +66,10 @@ func TestDFANoMinimo(t *testing.T) {
 	q4 := 4
 	q5 := 5
 	q6 := 6
-	
-	states = append(states ,q1, q2, q3, q4, q5, q6)
-	
-	fs := []State{ q4, q5, q6 }
+
+	states = append(states, q1, q2, q3, q4, q5, q6)
+
+	fs := []State{q4, q5, q6}
 
 	alphabet := []int{0, 1}
 
@@ -91,23 +91,22 @@ func TestDFANoMinimo(t *testing.T) {
 
 	Min := HopcroftDFAMin(M)
 
-	if (Min.States.Size() == M.States.Size()) {
+	if Min.States.Size() == M.States.Size() {
 		t.Errorf("the minimized dfa should have less states, expected 4, got %d", Min.States.Size())
-	} 
+	}
 }
-
 
 func Test2DFANoMinimo(t *testing.T) {
 	// 02 | 012
 	var states []State
 	q0 := 0
 	q1 := 1
-	q2 := 2 
+	q2 := 2
 	q3 := 3
 	q4 := 4
 	q5 := 5
 	states = append(states, q0, q1, q2, q3, q4, q5)
-	fs := []State{ q3, q5 }
+	fs := []State{q3, q5}
 	alphabet := []int{0, 1, 2}
 	delta := make(map[State]map[int]State)
 	delta[q0] = map[int]State{1: q1}
@@ -136,10 +135,10 @@ func Test3DFANoMinimo(t *testing.T) {
 	var states []State
 	q0 := 0
 	q1 := 1
-	q2 := 2 
+	q2 := 2
 	q3 := 3
 	states = append(states, q0, q1, q2, q3)
-	fs := []State{ q1, q2, q3 }
+	fs := []State{q1, q2, q3}
 	alphabet := []int{0, 1, 2}
 	delta := make(map[State]map[int]State)
 	delta[q0] = map[int]State{0: q1}
@@ -161,23 +160,22 @@ func Test3DFANoMinimo(t *testing.T) {
 		if statesWithIncomingTransitions.Size() == 0 {
 			t.Errorf("error, expected transition with %d to final state %d\n", c, Min.FinalStates[0])
 		}
-	}	
+	}
 }
-
 
 func Test4DFANoMinimo(t *testing.T) {
 	var states []State
 	A := 0
 	B := 1
-	C := 2 
+	C := 2
 	D := 3
 	E := 4
-	F := 5 
+	F := 5
 	G := 6
 	H := 7
 	states = append(states, A, B, C, D, E, F, G, H)
-	fs := []State{ C }
-	alphabet := []int{ 0, 1 }
+	fs := []State{C}
+	alphabet := []int{0, 1}
 	delta := make(map[State]map[int]State)
 	delta[A] = map[int]State{0: B, 1: F}
 	delta[B] = map[int]State{0: G, 1: C}
