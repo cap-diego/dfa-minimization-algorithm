@@ -1,6 +1,6 @@
 // +build estructures all
 
-package DFA
+package dfa
 
 import testing "testing"
 

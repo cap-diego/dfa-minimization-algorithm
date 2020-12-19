@@ -194,3 +194,62 @@ func Test4DFANoMinimo(t *testing.T) {
 		t.Errorf("error, expected 1 final state got %d", Min.FinalStates.Size())
 	}
 }
+
+func Test5DFAMinimo(t *testing.T) {
+	var states []State
+	A := 0
+	B := 1
+	C := 2
+	D := 3
+	E := 4
+	F := 5
+	states = append(states, A, B, C, D, E, F)
+	fs := []State{A , B, C, D, F}
+	alphabet := []int{0, 1}
+	delta := make(map[State]map[int]State)
+	delta[A] = map[int]State{0: B, 1: E}
+	delta[B] = map[int]State{0: B, 1: C}
+	delta[C] = map[int]State{0: D, 1: E}
+	delta[D] = map[int]State{0: F, 1: C}
+	delta[E] = map[int]State{0: E, 1: E}
+	delta[F] = map[int]State{0: F, 1: E}
+
+	M := DFA{States: states, InitialState: A, FinalStates: fs, Delta: delta, Alphabet: alphabet}
+
+	Min := HopcroftDFAMin(M)
+	
+	if Min.States.Size() > M.States.Size() {
+		t.Errorf("error, minimized automata should have the same number of states, got %d", Min.States.Size())
+	}
+
+}
+
+func Test6DFAMinimo(t *testing.T) {
+	// L = (11111)+
+	var states []State
+	A := 0
+	B := 1
+	C := 2
+	D := 3
+	E := 4
+	F := 5
+	states = append(states, A, B, C, D, E, F)
+	fs := []State{ F }
+	alphabet := []int{0, 1}
+	delta := make(map[State]map[int]State)
+	delta[A] = map[int]State{1: B}
+	delta[B] = map[int]State{1: C}
+	delta[C] = map[int]State{1: D}
+	delta[D] = map[int]State{1: E}
+	delta[E] = map[int]State{1: F}
+	delta[F] = map[int]State{1: A}
+
+	M := DFA{States: states, InitialState: A, FinalStates: fs, Delta: delta, Alphabet: alphabet}
+
+	Min := HopcroftDFAMin(M)
+	
+	if Min.States.Size() != M.States.Size() {
+		t.Errorf("error, minimized automata should have the same number of states, got %d", Min.States.Size())
+	}
+
+}
