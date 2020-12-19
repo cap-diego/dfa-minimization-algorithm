@@ -3,21 +3,21 @@ package dfa
 // Partition represents a set of states
 type Partition []State
 
-// State represent automata state with a numeric value
+// State represents an automata state with a numeric value
 type State = int // Alias to int
 
 type splitter struct {
-	partition Partition
-	input     int
+	partition Partition		
+	input     int			
 }
 
 // DFA represents a finite automata
 type DFA struct {
-	States       Partition
-	Alphabet     []int
-	InitialState State
-	FinalStates  Partition
-	Delta        map[State]map[int]State // Given state and symbol returns the state
+	States       Partition 			`json:"States"`
+	Alphabet     []int				`json:"Alphabet"`
+	InitialState State				`json:"InitialState"`
+	FinalStates  Partition			`json:"FinalStates"`
+	Delta        map[State]map[int]State `json:"Delta"` // Given state and symbol returns the state
 }
 
 // Size returns the number of states of the automata
