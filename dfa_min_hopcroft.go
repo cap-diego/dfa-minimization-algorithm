@@ -2,7 +2,7 @@ package dfa
 
 // HopcroftDFAMin Given A DFA returns a new DFA with minimum states
 func HopcroftDFAMin(A DFA) DFA {
-	completarTransiciones(&A)
+	// completarTransiciones(&A)
 	var pi []Partition
 	pi = append(pi, A.FinalStates)
 	pi = append(pi, A.States)
