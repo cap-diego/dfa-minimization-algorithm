@@ -97,7 +97,7 @@ func TestDFANoMinimo(t *testing.T) {
 }
 
 func Test2DFANoMinimo(t *testing.T) {
-	// 02 | 012
+	// 112 | 122
 	var states []State
 	q0 := 0
 	q1 := 1
@@ -122,12 +122,12 @@ func Test2DFANoMinimo(t *testing.T) {
 	if Min.FinalStates.Size() != 1 {
 		t.Errorf("error, expected 1 final state got: %d", Min.FinalStates.Size())
 	}
-	if states := Min.FinalStates.StatesWithIncomingTransitionWith(q0, &Min); states.IsEmpty() {
-		t.Errorf("error, expected 0 transitions to final states, got: %d\n", states.Size())
-	}
-	if Min.Delta[Min.InitialState] == nil {
-		t.Errorf("error, expected transition from initial got: %d\n", Min.InitialState)
-	}
+	// if states := Min.FinalStates.StatesWithIncomingTransitionWith(q0, &Min); states.IsEmpty() {
+	// 	t.Errorf("error, expected 0 transitions to final states, got: %d\n", states.Size())
+	// }
+	// if Min.Delta[Min.InitialState] == nil {
+	// 	t.Errorf("error, expected transition from initial got: %d\n", Min.InitialState)
+	// }
 }
 
 func Test3DFANoMinimo(t *testing.T) {
@@ -280,5 +280,62 @@ func Test7DFAMinimo(t *testing.T) {
 	if Min.States.Size() != 4 {
 		t.Errorf("error, minimized automata should have less states, got %d expected 4", Min.States.Size())
 	}
+}
 
+/*
+alphabet: [1, 2, 3, 4]
+delta: {97: {1: 98}, 98: {2: 99}, 99: {3: 100}, 100: {4: 97}}
+97: {1: 98}
+98: {2: 99}
+99: {3: 100}
+100: {4: 97}
+finalStates: [100]
+initialState: 97
+states: [97, 98, 99, 100]*/
+func Test8DFAMinimo(t *testing.T) {
+	// L = fee | fie
+	var states []State
+	A := 97
+	B := 98
+	C := 99
+	D := 100
+	states = append(states, A, B, C, D)
+	fs := []State{ D }
+	alphabet := []int{1, 2, 3, 4}
+	delta := make(map[State]map[int]State)
+	delta[A] = map[int]State{1: B}
+	delta[B] = map[int]State{2: C}
+	delta[C] = map[int]State{3: D}
+	delta[D] = map[int]State{4: A}
+	M := DFA{States: states, InitialState: A, FinalStates: fs, Delta: delta, Alphabet: alphabet}
+
+	Min := HopcroftDFAMin(M)
+	
+	if Min.States.Size() != M.States.Size() {
+		t.Errorf("error, minimized automata should have the same states, got %d", Min.States.Size())
+	}
+}
+
+func Test8BisDFAMinimo(t *testing.T) {
+	// L = fee | fie
+	var states []State
+	A := 1
+	B := 2
+	C := 3
+	D := 4
+	states = append(states, A, B, C, D)
+	fs := []State{ D }
+	alphabet := []int{97, 98, 99, 100}
+	delta := make(map[State]map[int]State)
+	delta[A] = map[int]State{97: B}
+	delta[B] = map[int]State{98: C}
+	delta[C] = map[int]State{99: D}
+	delta[D] = map[int]State{100: A}
+	M := DFA{States: states, InitialState: A, FinalStates: fs, Delta: delta, Alphabet: alphabet}
+
+	Min := HopcroftDFAMin(M)
+	
+	if Min.States.Size() != M.States.Size() {
+		t.Errorf("error, minimized automata should have the same states, got %d", Min.States.Size())
+	}
 }

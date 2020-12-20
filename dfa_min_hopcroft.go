@@ -2,6 +2,7 @@ package dfa
 
 // HopcroftDFAMin Given A DFA returns a new DFA with minimum states
 func HopcroftDFAMin(A DFA) DFA {
+	completarTransiciones(&A)
 	var pi []Partition
 	pi = append(pi, A.FinalStates)
 	pi = append(pi, A.States)
@@ -12,7 +13,7 @@ func HopcroftDFAMin(A DFA) DFA {
 	for _, symb := range A.Alphabet { // Step 4
 		var a0 = pi[0].StatesWithIncomingTransitionWith(symb, &A)
 		var a1 = pi[1].StatesWithIncomingTransitionWith(symb, &A)
-		if a0.Size() < a1.Size() {
+		if a0.Size() < a1.Size() && a0.Size()>0 {
 			// Use partition with finals states
 			worklist = append(worklist, splitter{partition: pi[0], input: symb})
 		} else {
@@ -37,7 +38,7 @@ func HopcroftDFAMin(A DFA) DFA {
 					if !RefinedPartitionReplacedInWorklist(&worklist, spR, spR1, spR2) {
 						ar1 := R1.StatesWithIncomingTransitionWith(c, &A)
 						ar2 := R2.StatesWithIncomingTransitionWith(c, &A)
-						if ar1.Size() < ar2.Size() {
+						if ar1.Size() < ar2.Size() && ar1.Size()>0 {
 							worklist = append(worklist, splitter{partition: R1, input: c})
 						} else {
 							worklist = append(worklist, splitter{partition: R2, input: c})
@@ -128,4 +129,27 @@ func pickOneAndRemove(worklist *[]splitter) splitter {
 	newWorklist = (*worklist)[:worklistSize-1]
 	*worklist = newWorklist
 	return sp
+}
+
+func completarTransiciones(A *DFA) {
+	qt := 9999
+	for _, input := range A.Alphabet {
+		if A.Delta[qt] == nil {
+			A.Delta[qt] = map[int]State{input: qt}
+		}else {
+			A.Delta[qt][input] = qt
+		}
+		for _, q := range A.States {
+			if A.Delta[q] == nil {
+				A.Delta[q] = map[int]State{input: qt}
+			}else {
+				_, ok := A.Delta[q][input]
+				if !ok {
+					A.Delta[q][input] = qt
+				}
+			}
+			
+		}
+	}
+	A.Alphabet = append(A.Alphabet, qt)
 }
