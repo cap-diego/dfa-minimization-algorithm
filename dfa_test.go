@@ -253,3 +253,32 @@ func Test6DFAMinimo(t *testing.T) {
 	}
 
 }
+
+func Test7DFAMinimo(t *testing.T) {
+	// L = fee | fie
+	var states []State
+	A := 0
+	B := 1
+	C := 2
+	D := 3
+	E := 4
+	F := 5
+	states = append(states, A, B, C, D, E, F)
+	fs := []State{ D, F }
+	alphabet := []int{1, 2, 3}
+	delta := make(map[State]map[int]State)
+	delta[A] = map[int]State{1: B}
+	delta[B] = map[int]State{2: C}
+	delta[B] = map[int]State{3: E}
+	delta[C] = map[int]State{2: D}
+	delta[E] = map[int]State{2: F}
+
+	M := DFA{States: states, InitialState: A, FinalStates: fs, Delta: delta, Alphabet: alphabet}
+
+	Min := HopcroftDFAMin(M)
+	
+	if Min.States.Size() != 4 {
+		t.Errorf("error, minimized automata should have less states, got %d expected 4", Min.States.Size())
+	}
+
+}
