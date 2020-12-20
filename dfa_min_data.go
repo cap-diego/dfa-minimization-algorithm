@@ -13,11 +13,11 @@ type splitter struct {
 
 // DFA represents a finite automata
 type DFA struct {
-	States       Partition 			`json:"States"`
-	Alphabet     []int				`json:"Alphabet"`
-	InitialState State				`json:"InitialState"`
-	FinalStates  Partition			`json:"FinalStates"`
-	Delta        map[State]map[int]State `json:"Delta"` // Given state and symbol returns the state
+	States       Partition 			`json:"states"`
+	Alphabet     []int				`json:"alphabet"`
+	InitialState State				`json:"initialState"`
+	FinalStates  Partition			`json:"finalStates"`
+	Delta        map[State]map[int]State `json:"delta"` // Given state and symbol returns the state
 }
 
 // Size returns the number of states of the automata
