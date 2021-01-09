@@ -23,7 +23,7 @@ type DFA struct {
 - Alphabet: representa el conjunto de posibles inputs, también se representa como un listado de int.
 - InitialState: representa el único estado inicial.
 - FinalStates: representa el conjunto de estados finales
-- Delta: representa la función de transición en la forma: Delta[w] = { <i : q> | i in Alphabet ^ existe una arista dirigida de w a q mediante i }.
+- Delta: representa la función de transición en la forma: Delta[w] = { \< i : q \> | i in Alphabet ^ existe una arista dirigida de w a q mediante i }.
 
 Una vez construido, llamar a la función:
 
